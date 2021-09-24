@@ -1,0 +1,255 @@
+---------------------------------------------------  **  COMANDOS UTEIS  ** ----------------------------------------------------------
+
+python run2.py runserver           = inicia o server
+
+python -m venv venv                = criar o ambiente virtual
+
+.\venv\Scripts\Activate            
+.\venv\Scripts\Activate.ps1        = inicializar o ambiente virtual
+
+pip freeze > requirements.txt      = armazenar as modulo(bibliotecas) que é utilizada nesse projeto
+pip install -r requirements.txt    = instala as bibliotecas necessarias para rodar o programa
+
+git push origin --delete <branch>  = deletar beanch do repositorio
+
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned    = executar no powershell para ter permissao
+
+python -m pip install --upgrade pip      = atualiza o pip   
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------  **  AULA1  ** ---------------------------------------------------------------
+
+Instale o python e depois o Flask usando essa linha no terminal: pip install Flask
+
+1 - importar a biblioteca:
+
+        from flask import Flask
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+2 - Criar a instancia, especificar qual é o arquivo, principal ou secundario
+
+        app = Flask(__name__)      #controla a aplicação inteira, todo o flask está nessa variavel
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+3 - If de controle, ter a certeza que o flask vai começar com o arquivo principal
+        
+        if __name__ == "__main__":
+            app.run()
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+4 - criar a pagina para a aplicação acessar  
+
+        @app.route("/")             #metodo definir rota
+        def index():                
+            return "Hello World!"
+
+
+                Executando a rota que aparece no terminal ira aparecer no site o "Hello World!".
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------------------  **  AULA2  ** ---------------------------------------------------------------
+
+No terminal instale: 
+        
+        pip install virtualenv 
+
+Serve para criar um ambiente a parte do pc, como se fosse uma maquina virtual para rodar a sua aplicação que não tenhha
+nada instalado dele e com isso nenhum programa para atrapalhar o executamento da aplicação.
+
+1 - Vamos inicializar o ambiente virtual, virtualenv:
+
+         python -m venv venv
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+2 - Entrar no ambiente virtual
+
+        .\venv\Scripts\activate.ps1
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+3 - Instalar o flask no ambiente virtual
+
+        .\venv\Scripts\pip3.8 install flask
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+4 - Verificar se tudo está instalado certinho
+
+        .\venv\Scripts\pip3.8 freeze
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+5 - Se quiser gravar essas informações em um txt (o que está instalado no ambiente virtual)
+
+        .\venv\Scripts\pip3.8 freeze > requeriment.txt
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+6 - Instalar apartir do .txt
+
+        .\venv\Scripts\pip3.8 install -r requeriment.txt
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------  **  AULA2 CONTINUACÃO ** -----------------------------------------------------------
+
+Criar o conceito MVC
+
+Na pasta principal criei uma pasta chamada "app" dentro dessa paste crie mais 4 pastas com nome:
+
+    - "controllers"
+    - "models"
+    - "templates"
+    - "static"
+
+M = model       =     banco de dados   = "models"
+V = viewrs      =      parte visual    = "templates" + "static"
+C = controllers =  controlador (ações) =  "controllers"
+
+
+1 - Mover o "app.py" para a pasta nova "app"
+
+2- Ronomear o "app.py" para "__init__"
+
+        ?? __init__ ??
+
+- É um arquivo para quando trabalhamos com modulo (conjunto de definições: funções, classe, ...) 
+- Indica que tem um modulo principal e que nas outras pastas tera submodulos
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+3 - Criar os submodulos (__init__.py) nas pastas ("controllers" e "models")
+
+4 - O "__init__.py" que está na pasta principal "app" vai ficar assim:
+
+        from flask import Flask
+
+
+        app = Flask(__name__)
+
+        if __name__ == "__main__":
+            app.run() 
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+5 - Vamos criar um "default.py" na pasta "controllers" e colocar esse codigo no "default.py":
+
+        from app import app        # da pasta app estamos importando a variavel app ; from app (modulo) import app (variavel)
+
+        @app.route("/")
+        def index():
+            return "Hello World!!"
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+6 - O "__init__.py" que está na pasta principal "app" vai ficar assim:
+
+
+        from flask import Flask
+
+        app = Flask(__name__)
+
+
+E vamos criar um arquivo "run.py" na pasta "CURSOFLASK" aonde está todas as pastas do projeto e 
+dentro desse aquivo vai ficar assim:
+
+        from app import app
+
+        if __name__ == "__main__":
+            app.run()
+
+        from app.controllers import default
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------  **  AULA3  ** ---------------------------------------------------------------
+
+1 - Para conseguir se comunicar com banco de dados iremos instalar o SQLAlchemy(ORM) executando isso dentro do venv:
+
+        pip install flask-sqlalchemy
+
+Obs: não esqueça de verificar se você está no ambiente virtual, (venv) em verde
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+2 - Vamos alterar o "__init__.py" da pasta "app" para estabelecer a conexão com o banco de dados e o codigo vai ficar assim:
+
+
+        from flask import Flask
+        from flask_sqlalchemy import SQLAlchemy    # from flask_(nome do modulo) import (classe) 
+
+        app = Flask(__name__)
+        app.config['SQLAlCHEMY_DATABASE_URI'] = 'sqlite:///storage.db'      # URI de conexao com o banco de dados,ou seja, o caminho que passar até o banco de dados (estabelecer a conexão)
+        db = SQLAlchemy(app)    # SQLAlchemy(instancia do flask)
+
+        from app.controllers import default
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+3 - Criar as tabelas do banco de dados, crie o arquivo "tables.py" ma pasta "models":
+
+        from enum import unique
+        from app import db
+
+
+        # db.Model = classe do SQLAlchemy que tras um modelo de banco de dados padrão
+        class User(db.Model):      #Primeira tabela
+            __tablename__= "users"  #o nome da tabela do banco de dados
+
+            id = db.Column(db.Integer, primary_key=True)  #criando a coluna e o que ela suporta; db.Integer = recebe numero inteiro;  primary_key = chave primaria; unique =  evitar repetição (ser único)
+            usernane = db.Column(db.String, unique=True)
+            password = db.Column(db.String)
+            name = db.Column(db.String)
+            email = db.Column(db.String, unique=True)
+
+            #construtor que inicializa todos os campos (campos obrigatorios)
+            def __init__(self, username, password, name, email):
+                self.username = username
+                self.password = password
+                self.name = name
+                self.email = email
+            
+            # representação, vai ser utilizado para bnusca no banco de dados
+            def __repr__(self):
+                return "<User %r>" % self.username
+
+
+        class Post(db.Model):
+            __tablename__= "posts"
+
+            id = db.Column(db.Integer, primary_key=True)
+            content = db.Column(db.Text)
+            user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # id do usuario; referencia ao banco de dados: Users ( db.ForeignKey('users.id')
+
+            user = db.relationship('User', foreign_keys=user_id)  # quando buscar o post, vai vê no campo user não só o id mas tb todas as informações do usuario
+
+            def __init__ (self,content,user_id):
+                self.content = content
+                self.user_id = user_id
+            
+            def __repr__(self):
+                return "<Post %r>" % self.id
+
+
+        class Follow(db.Model):
+            __tablename__ = "follow"
+
+            id = db.Column(db.Integer, primary_key=True)
+            user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+            follower_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+            user = db.relationship('User', foreign_keys=user_id)
+            follower = db.relationship('User', foreign_keys=follower_id)
+
+--------------------------------------------------------------------------------------------------------------------------------------            
+
+-------------------------------------------------------  **  AULA4  ** ---------------------------------------------------------------
+
+ 
