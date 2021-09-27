@@ -3,7 +3,7 @@ from app import db
 
 
 # db.Model = classe do SQLAlchemy que tras um modelo de banco de dados padrão
-class User(db.Model):      #Primeira tabela
+class User(db.Model):      #Primeira coluna da tabela
     __tablename__= "users"  #o nome da tabela do banco de dados
 
     id = db.Column(db.Integer, primary_key=True)  #criando a coluna e o que ela suporta; db.Integer = recebe numero inteiro;  primary_key = chave primaria; unique =  evitar repetição (ser único)
@@ -24,7 +24,7 @@ class User(db.Model):      #Primeira tabela
         return "<User %r>" % self.username
 
 
-class Post(db.Model):
+class Post(db.Model):   #Segunda coluna da tabela
     __tablename__= "posts"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -41,7 +41,7 @@ class Post(db.Model):
         return "<Post %r>" % self.id
 
 
-class Follow(db.Model):
+class Follow(db.Model):       #Terceira coluna da tabela
     __tablename__ = "follow"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -50,6 +50,4 @@ class Follow(db.Model):
 
     user = db.relationship('User', foreign_keys=user_id)
     follower = db.relationship('User', foreign_keys=follower_id) 
-
-
 

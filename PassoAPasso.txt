@@ -16,6 +16,25 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned    = execut
 
 python -m pip install --upgrade pip      = atualiza o pip   
 
+
+git config --global user.email "lfalmeida97@hotmail.com"
+git config --global user.name "Fellipe97"
+
+
+
+git init
+git remote add origin https://github.com/Fellipe97/twitter_basico_Python.git
+git branch -M main                                                                    = Passo a passo para criar repositorio
+git push -u origin main
+
+
+echo "# twitter_basico_Python" >> README.md
+git init
+git add README.md
+git commit -m "first commit"                                                          = Passo a passo para criar repositorio (fazer td pelo visual studio)
+git branch -M main
+git remote add origin https://github.com/Fellipe97/twitter_basico_Python.git
+git push -u origin main
 --------------------------------------------------------------------------------------------------------------------------------------
 
 -------------------------------------------------------  **  AULA1  ** ---------------------------------------------------------------
