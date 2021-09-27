@@ -37,7 +37,7 @@ git remote add origin https://github.com/Fellipe97/twitter_basico_Python.git
 git push -u origin main
 --------------------------------------------------------------------------------------------------------------------------------------
 
--------------------------------------------------------  **  AULA1  ** ---------------------------------------------------------------
+-------------------------------------------------------  **  AULA 1  ** --------------------------------------------------------------
 
 Instale o python e depois o Flask usando essa linha no terminal: pip install Flask
 
@@ -71,7 +71,7 @@ Instale o python e depois o Flask usando essa linha no terminal: pip install Fla
 --------------------------------------------------------------------------------------------------------------------------------------
 
 
--------------------------------------------------------  **  AULA2  ** ---------------------------------------------------------------
+-------------------------------------------------------  **  AULA 2  ** --------------------------------------------------------------
 
 No terminal instale: 
         
@@ -116,7 +116,7 @@ nada instalado dele e com isso nenhum programa para atrapalhar o executamento da
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
-------------------------------------------------  **  AULA2 CONTINUACÃO ** -----------------------------------------------------------
+------------------------------------------------  **  AULA 2 CONTINUACÃO ** ----------------------------------------------------------
 
 Criar o conceito MVC
 
@@ -187,7 +187,7 @@ dentro desse aquivo vai ficar assim:
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
--------------------------------------------------------  **  AULA3  ** ---------------------------------------------------------------
+-------------------------------------------------------  **  AULA 3  ** --------------------------------------------------------------
 
 1 - Para conseguir se comunicar com banco de dados iremos instalar o SQLAlchemy(ORM) executando isso dentro do venv:
 
@@ -219,7 +219,7 @@ Obs: não esqueça de verificar se você está no ambiente virtual, (venv) em ve
 
 
         # db.Model = classe do SQLAlchemy que tras um modelo de banco de dados padrão
-        class User(db.Model):      #Primeira tabela
+        class User(db.Model):      #Primeira coluna da tabela
             __tablename__= "users"  #o nome da tabela do banco de dados
 
             id = db.Column(db.Integer, primary_key=True)  #criando a coluna e o que ela suporta; db.Integer = recebe numero inteiro;  primary_key = chave primaria; unique =  evitar repetição (ser único)
@@ -240,7 +240,7 @@ Obs: não esqueça de verificar se você está no ambiente virtual, (venv) em ve
                 return "<User %r>" % self.username
 
 
-        class Post(db.Model):
+        class Post(db.Model):   #Segunda coluna da tabela
             __tablename__= "posts"
 
             id = db.Column(db.Integer, primary_key=True)
@@ -257,7 +257,7 @@ Obs: não esqueça de verificar se você está no ambiente virtual, (venv) em ve
                 return "<Post %r>" % self.id
 
 
-        class Follow(db.Model):
+        class Follow(db.Model):   #Terceira coluna da tabela
             __tablename__ = "follow"
 
             id = db.Column(db.Integer, primary_key=True)
@@ -269,6 +269,266 @@ Obs: não esqueça de verificar se você está no ambiente virtual, (venv) em ve
 
 --------------------------------------------------------------------------------------------------------------------------------------            
 
--------------------------------------------------------  **  AULA4  ** ---------------------------------------------------------------
+-------------------------------------------------------  **  AULA 4  ** --------------------------------------------------------------
 
+Instalar:
+        pip install flask-migrate
+        pip install flask-script
  
+ 1 - Vamos alterar o arquivo "__init__.py" da pasta "app"
+
+        from flask import Flask
+        from flask_sqlalchemy import SQLAlchemy    # from flask_(nome do modulo) import (classe) 
+        from flask_script import Manager
+        from flask_migrate import Migrate, MigrateCommand
+
+
+        app = Flask(__name__)
+        app.config['SQLAlCHEMY_DATABASE_URI'] = 'sqlite:///storage.db'      # URI de conexao com o banco de dados,ou seja, o caminho que passar até o banco de dados (estabelecer a conexão)
+        db = SQLAlchemy(app)    # SQLAlchemy(instancia do flask)
+        migrate = Migrate (app,db)  #instanciando para fazer nossas transições com o banco de dados, portando, precisa receber o nosso app e o nosso banco
+
+        manager = Manager(app) #cuidar dos comandos que será excutado para inicializar a aplicação
+        manager.add_command('db', MigrateCommand) # adcicionando um comando chamado db
+
+        from app.controllers import default
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+2 - Vamos mudar a forma de excução da nossa aplicação para podermos adicionar comandos de execução nela, alterar o arquivo "run.py" da pasta "CURSOFLASK"
+
+        from app import manager
+
+        if __name__ == "__main__":
+        manager.run()
+
+Comando disoniveis:   não é comando o que tiver no #
+
+        python run.py runserver                                #(não é comando): executa a aplicação                             
+        python run.py db init                                  #(não é comando): cria uma pasta chamada migrations (salvar tds as migrações do banco) 
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+3 - Tive problemas com a versão mais atualizada, pois o pacote Flask_Script foi descontinuado. Portando, faça downgrade dos pacotes:
+
+        pip install Flask==1.1.4
+        pip install Flask-Migrate==2.0.1
+        Flask-Script==2.0.6
+
+Execute: 
+
+        python run.py runserver
+        python run.py db init
+ 
+ --------------------------------------------------------------------------------------------------------------------------------------
+
+ 4 - Vamos começar a migrar o banco
+
+        python run.py db migrate
+
+Se aparecer o erro : py:851: UserWarning: Neither SQLALCHEMY_DATABASE_URI nor SQLALCHEackages\flask_sqlalchemy\__init__.
+
+        apaga e reescreve essa linha (arquivo "__init__" da pasta "app"):
+                app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///storage.db'
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+5 - Para visualizar o banco de dados criando utilize o Sqliteman, o banco estara vazio
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+6 - Vamos preencher(atualizar) o banco, execute essa linha no terminal:
+        
+        python run.py db upgrade              
+
+Não se preocupe se aparentemente não atualizar no Sqliteman, só se preocupe se parecer algum erro no terminal (se escreveu o comando errado)
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------  **  AULA 5  ** --------------------------------------------------------------
+
+1 - Vamos criar um arquivo "config.py", para cuidar das nosssas configurações, na pasta "CURSOFLASK".
+
+config.py:
+
+        DEBUG = True  #podemos alterar o arquivo e ele atualiza sozinho, sem precisar reiniciar o servidor (ctrl+C e inicializar de novo).
+
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///storage.db'  # URI de conexao com o banco de dados,ou seja, o caminho que passar até o banco de dados (estabelecer a conexão)
+        SQLALCHEMY_TRACK_MODIFICATIONS = True    #acabar com o warming
+
+
+__init__ (da pasta "app"):
+
+        from flask import Flask
+        from flask_sqlalchemy import SQLAlchemy    # from flask_(nome do modulo) import (classe) 
+        from flask_script import Manager
+        from flask_migrate import Migrate, MigrateCommand
+
+        app = Flask(__name__)
+        app.config.from_object('config') 
+
+        db = SQLAlchemy(app)    # SQLAlchemy(instancia do flask)
+        migrate = Migrate (app, db)
+
+        manager = Manager(app)
+        manager.add_command('db', MigrateCommand)
+
+        from app.controllers import default
+
+Fazemos um arquivo que está com todas as configurações e tiramos o warming.
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------  **  AULA 6  ** --------------------------------------------------------------
+
+Podemos ter mais de uma rota para chegar no site que desejamos, iremos vê sovre isso.
+
+No arquivo "default.py" na pasta "controllers":
+
+        from app import app
+
+        #Primeira pagina
+        #As duas rotas vão chegar no mesmo destino
+        @app.route("/index")         #Primeira rota pra acessar a pagina da "Primeira pagina!"
+        @app.route("/")              #Segunda rota pra acessar a pagina da "Primeira pagina!"
+        def index():
+        return "Primeira pagina!"
+
+        #Segunda pagina
+        @app.route("/teste/", methods=['GET'])   #Como utilizar um methods
+        def test():
+        return "Segunda pagina!"
+
+        #Terceira pagina
+        @app.route( "/teste/<name>")  # receber nome por parametro
+        def teste(name):
+                return "Olá, %s!" % name
+
+Se colocar no google http://127.0.0.1:5000/teste/ vai exibir "Segunda Pagina!" 
+
+Obs: Na terceira pagina vc ira digitar no navegador assim:
+
+http://127.0.0.1:5000/teste/(informe o nome)
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------  **  AULA 7  ** --------------------------------------------------------------
+
+Vamos deixar nossa pagina bonita? Parar de retornar só hellow world?
+
+1 - Primeiro vamos deixar o Hello world mais bonito,como? altere o arquivo "default.py":
+
+        from app import app
+
+        @app.route("/index")
+        @app.route("/")
+        def index():
+        return """
+        <html>
+        <head>
+                <title>Hello World!</title>
+        </head>
+        <body>
+                <h1>Hello world!</h1>
+        </body>
+        </html>
+        """
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+2 - Apos você executar no navegador, vai perceber que mudamos o nome da aba e o tamanho do texto.Conseguimos fazer isso
+utilizando um return que retorna uma string que tem html dentro dele, mas imagina o tamanho que iria ficar se fizer 
+o twitter todo por esse return. Logo, vamos retornar em uma função.
+
+Alterando o codigo:
+
+        from flask import render_template
+        from app import app
+
+
+
+        @app.route("/index")
+        @app.route("/")
+        def index():
+                return render_template('index.html')
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+3 - Vamos criar o html "index.html" na pasta "templates"
+
+(Pra quem utiliza Visual Code) Para facilitar, escreve "!" e aperta "enter" ele ira gerar um html automatico assim:
+Obs:Alias qualquer tag vc pode fazer assim: h1 e apertar o "tab" que ele ira completar para você.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+
+Vamos alterar um pouco:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hello World</title>
+</head>
+<body>
+    <h1>Hello world!</h1>
+</body>
+</html>
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+4 - Fazer com que o html receba variavel e faça teste.Vamos alterar o "default.py" para receber o valor pra variavel e vamos alterar
+o "index.html" para fazer o teste e retornar a pagina.
+
+default.py:
+
+from flask import render_template
+from app import app
+
+
+
+@app.route("/index/<user>")
+@app.route("/", defaults={"user":None})
+def index(user):
+    return render_template('index.html' , user = user)
+
+
+
+
+index.html:
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toilter</title>
+</head>
+<body>
+    <h1>Toilter</h1>
+    {% if user %}
+    <p>Bem-vind ao Toilter, {{user}}!</p>
+    {% else %}
+    <p>Bem-vindo ao Toilter</p>
+    {% endif %}
+</body>
+</html>
+
+Podemos reparar que utilizamos o python entre as chaves contendo o {% %} para fazer bloco de codigo e para printar alguma 
+variavel utilizamos {{}}.
+
